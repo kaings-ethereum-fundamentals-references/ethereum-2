@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Bootstrap -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="d-flex justify-content-center m-5">
+            <div class="form-group" style="display:inline;">
+                <div class="input-group">
+                  <input class="form-control input-lg" name="greeting">
+                  </input>
+                  <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary btn-block">Set Greeting</button>
+                  </span>
+                </div>
+              </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>
+
+        <!-- <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script> -->
+        <script>
+
+            /* TESTING */
+            // console.log('Web3..... ', Web3);
+            // console.log('web3..... ', web3); // undefined
+            // console.log('web3_currentProvider..... ', new Web3(web3.currentProvider));
+            // console.log('web3_test..... ', new Web3('http://localhost:7545'));
+            // (new Web3('http://localhost:7545')).eth.getAccounts().then(res => {console.log('web3_getAccounts..... ', res)})
+            
+            /* Web3 Setup */
+            let web3;
+
+            let contractABI = [
+              {
+                "constant": false,
+                "inputs": [
+                  {
+                    "name": "_greeting",
+                    "type": "string"
+                  }
+                ],
+                "name": "setGreeting",
+                "outputs": [
+                  {
+                    "name": "",
+                    "type": "bool"
+                  }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+              },
+              {
+                "constant": true,
+                "inputs": [],
+                "name": "greet",
+                "outputs": [
+                  {
+                    "name": "",
+                    "type": "string"
+                  }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+              }
+            ];
+
+            let contractAddr = '0x371ec0F13db90Bb733d281A62755C39782659862';
+
+
+            if(typeof web3 !== 'undefined') {
+              web3 = new Web3(web3.currentProvider);
+            } else {
+              web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+            }
+
+            const contract = new web3.eth.Contract(contractABI, contractAddr);  // synchronous
+
+
+            /* html interactions */
+            const greeting = document.querySelector('[name=greeting]');
+            const setGreeting = document.querySelector('[type=submit]');
+
+            setGreeting.addEventListener('click', ($event) => {
+              $event.preventDefault();
+              // console.log('contract_methods..... ', contract.methods);
+              
+              web3.eth.getAccounts()
+              .then(async(accounts) => {
+                const res = await contract.methods.setGreeting(greeting.value).send({
+                  from: accounts[0]
+                });
+
+                console.log('res..... ', res);
+              })
+
+
+            });
+
+
+
+
+
+        </script>
+    </body>
+</html>
